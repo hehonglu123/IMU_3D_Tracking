@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:id="@+id/mainLayout"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/dummyCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="@dimen/sensor_font_size"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/sensorType" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ambient"
+        android:textSize="@dimen/sensor_font_size"
+        android:id="@+id/ambientType"
+        android:layout_gravity="center_vertical"
+        android:layout_above="@+id/sensorType"
+        android:layout_toLeftOf="@+id/dummyCenter" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Device"
+        android:textSize="@dimen/sensor_font_size"
+        android:id="@+id/deviceType"
+        android:layout_gravity="center_vertical"
+        android:layout_toRightOf="@+id/dummyCenter"
+        android:layout_above="@+id/sensorType" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Type"
+        android:textSize="@dimen/sensor_font_size"
+        android:id="@+id/sensorType"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/sensorDetails" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Details"
+        android:textSize="@dimen/sensor_font_size"
+        android:gravity="center_horizontal"
+        android:id="@+id/sensorDetails"
+        android:layout_centerInParent="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Accuracy"
+        android:textSize="@dimen/sensor_font_size"
+        android:id="@+id/sensorAccuracy"
+        android:layout_below="@+id/sensorDetails"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rate"
+        android:textSize="@dimen/sensor_font_size"
+        android:id="@+id/sensorRate"
+        android:layout_below="@+id/sensorAccuracy"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Raw"
+        android:textSize="@dimen/sensor_font_size"
+        android:fontFamily="monospace"
+        android:id="@+id/sensorRaw"
+        android:layout_below="@+id/sensorRate"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Prev"
+        android:textSize="@dimen/sensor_font_size"
+        android:id="@+id/sensorPrev"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:minHeight="30dp"
+        android:background="#606060" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Next"
+        android:textSize="@dimen/sensor_font_size"
+        android:id="@+id/sensorNext"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:minHeight="30dp"
+        android:background="#606060" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/sensorBarLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/sensorNext"
+        android:layout_above="@+id/sensorPrev">
+
+    </LinearLayout>
+</RelativeLayout>
