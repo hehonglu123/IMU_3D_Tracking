@@ -8,7 +8,7 @@ from scipy.integrate import cumtrapz
 from scipy.signal import butter, lfilter
 from scipy.signal import freqs
 
-RATE = 1000000000
+RATE = 10**9
 GRAVITY = np.r_[0, 0, 9.8]
 
 def rom_elbow():
@@ -22,9 +22,9 @@ def rom_elbow():
             # theta2 = np.deg2rad(theta2)
             # if np.cos(theta2) * np.sin(theta1) > 0:
             point = ([
-                    np.cos(theta2) * np.sin(theta1),
-                    np.sin(theta2),
-                    -np.cos(theta1) * np.cos(theta2)
+                    l_elbow * np.cos(theta2) * np.sin(theta1),
+                    l_elbow * np.sin(theta2),
+                    l_elbow * -np.cos(theta1) * np.cos(theta2)
                     ])
             # point = point * l_elbow
 
@@ -32,7 +32,7 @@ def rom_elbow():
     point_cloud_elbow = np.array(point_cloud_elbow)
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(point_cloud_elbow[:, 0], point_cloud_elbow[:, 1], point_cloud_elbow[:, 2], c='g', marker='*')
+    # ax.scatter(point_cloud_elbow[:, 0], point_cloud_elbow[:, 1], point_cloud_elbow[:, 2], c='g', marker='*')
     # plt.show()
 
     A1 = np.zeros((4, 4))
@@ -42,12 +42,12 @@ def rom_elbow():
     # np.linspace(np.deg2rad(-180), np.deg2rad(180)):
     for t1 in np.linspace(np.deg2rad(-60), np.deg2rad(180), 20):
         for t2 in np.linspace(np.deg2rad(-40), np.deg2rad(120), 20):
-            theta1 = t1
-            theta2 = t2-t1
+            theta1 = t2
+            theta2 = t1
             a1 = 0
-            # alpha1 = np.pi/2
-            alpha1 = np.pi/2
-            d1 = 0
+            alpha1 = -np.pi/2
+            # alpha1 = 0
+            d1 = l_elbow
             A1[0,0] = np.cos(theta1)
             A1[0,1] = -np.sin(theta1)* np.cos(alpha1)
             A1[0,2] = np.sin(theta1)* np.sin(alpha1)
@@ -66,8 +66,8 @@ def rom_elbow():
             A1[3,3] = 1
 
             a2 = 0
-            alpha2 = -np.pi/2
-            d2 = 0
+            alpha2 = 0
+            d2 = l_elbow
             A2[0, 0] = np.cos(theta2)
             A2[0, 1] = -np.sin(theta2)* np.cos(alpha2)
             A2[0, 2] = np.sin(theta2)* np.sin(alpha2)
@@ -91,13 +91,13 @@ def rom_elbow():
             T = M[3:, :3]
             # print(T.shape, T, M.shape, M)
             # point_cloud_elbow2.append(T)
-            base = np.r_[0,-1 * 1,0]
+            base = np.r_[0,-1,0]
 
             # point = np.matmul(base,A)
 
 
             # if np.matmul(base,R)[2] > 0:
-            point_cloud_elbow2.append(np.matmul(base,R))
+            point_cloud_elbow2.append(np.matmul(R, l_elbow * base))
                 # print(M[3:,:3].shape, R.shape)
                 # T = np.r_[M[3,0],M[3,1],M[3,2]]
                 # point_cloud_elbow2.append(np.matmul(T, R))
@@ -297,28 +297,73 @@ def clean_acc(acc_array):
     # for i in range(0, len(acc_array), 3):
         # np.average()
 
+def dead_reckon(aX, aY, aZ, wX, wY, wZ, time):
+    X = [0]
+    Y = [0]
+    Z = [0]
+    R = np.eye(3)
+    vx = 0
+    vy = 0
+    vz = 0
+    for i in range(len(time) - 2):
+        dt = (time[i + 2] - time[i + 1]) * (1/RATE)
+        tx = dt * wX[i + 1]
+        ty = dt * wY[i + 1]
+        tz = dt * wZ[i + 1]
+        Rx = np.array([[1, 0, 0],
+                       [0, np.cos(tx), -np.sin(tx)],
+                       [0, np.sin(tx), np.cos(tx)]])
+
+        Ry = np.array([[np.cos(ty), 0, np.sin(ty)],
+                       [0, 1, 0],
+                       [-np.sin(ty), 0, np.cos(ty)]])
+
+        Rz = np.array([[np.cos(tz), -np.sin(tz), 0],
+                       [np.sin(tz), np.cos(tz), 0],
+                       [0, 0, 1]])
+        R = np.matmul(Rz, R)
+        R = np.matmul(Ry, R)
+        R = np.matmul(Rx, R)
+        R_temp = np.linalg.inv(R)
+        dtt = (time[i + 1] - time[i]) * (1/RATE)
+
+        dv = np.array([[dtt * aX[i]],
+                       [dtt * aY[i]],
+                       [dtt * (aZ[i] - aZ[0])]])
+        dv_world = np.matmul(R_temp, dv)
+
+        vx += dv_world[0][0]
+        vy += dv_world[1][0]
+        vz += dv_world[2][0]
+        X.append(X[-1] + vx * dt)
+        Y.append(Y[-1] + vy * dt)
+        Z.append(Z[-1] + vz * dt)
+    return X, Y, Z
 
 def skin_dead_reckon():
     # load data
     f = open('Data/Triangle/Accelerometer.csv', 'r')
     readfile = csv.reader(f)
     T = list(map(list, zip(*readfile)))
-    time = [float(i) for i in T[0]]
+    time_acc = [float(i) for i in T[0]]
     aX = [float(i) for i in T[1]]
     aY = [float(i) for i in T[2]]
     aZ = [float(i) for i in T[3]]
     f = open('Data/Triangle/Gyroscope.csv', 'r')
     readfile = csv.reader(f)
     T = list(map(list, zip(*readfile)))
+    time_omega = [float(i) for i in T[0]]
     wX = [float(i) for i in T[1]]
     wY = [float(i) for i in T[2]]
     wZ = [float(i) for i in T[3]]
     f = open('Data/Triangle/MagneticField.csv', 'r')
     readfile = csv.reader(f)
     T = list(map(list, zip(*readfile)))
+    time_mag = [float(i) for i in T[0]]
     mX = [float(i) for i in T[1]]
     mY = [float(i) for i in T[2]]
     mZ = [float(i) for i in T[3]]
+
 
     # determine which of the sensors has the longest array
     acc_len = len(aX)
@@ -371,7 +416,7 @@ def skin_dead_reckon():
     q1, pos1, vel1 = skin.imus.analytical(R_initialOrientation=skin.quat.convert( \
         skin.imus.kalman(rate=RATE, acc=acc_array, omega=omega_array, mag=mag_array)[0], to='rotmat'), \
         omega=omega_array, initialPosition=np.array([0, 0, 0]), \
-        accMeasured=acc_array, rate=1000000000)
+        accMeasured=acc_array, rate=RATE)
 
     # low pass the accelerometer value
     acc_array = lp_filter(acc_array)
@@ -381,11 +426,14 @@ def skin_dead_reckon():
     # calculate the location of gravity at time 0
     initial_orientation = skin.quat.convert(
         skin.imus.kalman(rate=RATE, acc=acc_array, omega=omega_array, mag=mag_array)[0], to='rotmat')
+    print("Initial orientation: ", initial_orientation)
     g0 = np.linalg.inv(initial_orientation).dot(GRAVITY)
+    print("G0", g0)
 
     # calculate the quaternion that rotates the first accelerometer value into the
     # frame of gravity
     q0 = skin.vector.q_shortest_rotation(acc_array[0], g0)
+    print(q0)
 
     # obtain the initial quaternion (aka the quaternion of the initial orientation)
     q_initial = skin.rotmat.convert(initial_orientation, to='quat')
@@ -400,37 +448,65 @@ def skin_dead_reckon():
     # orientation to a second orientation we do this in the frame of the smartwatch
     # as the values read from the IMU is always in the reference frame of the smartwatch
     # q = skin.quat.calc_quat(omega_array, q_ref, RATE, 'bf')
-    q = skin.imus.kalman(RATE, acc_array, omega_array, mag_array) #skin.quat.calc_quat(omega_array, q_ref, RATE, 'bf')
+    q = []
+    print("_____________",acc_array[0])
+    for i in range(len(time_acc)-1):
+        time_diff = time_acc[i+1] - time_acc[i]
+        q_temp = skin.imus.kalman(RATE, acc_array[i:i+1], omega_array[i:i+1], mag_array[i:i+1])
+        q.append(q_temp)
+    # print(skin.imus.kalman(RATE, acc_array, omega_array, mag_array).shape) #skin.quat.calc_quat(omega_array, q_ref, RATE, 'bf')
+    q = np.asarray(q)
+    q = np.squeeze(q)
+    # print(q)
+    # print(q.shape)
     q = skin.quat.q_mult(q_ref, q)
 
     # At every timestep define where the gravity vector is
     bf_grav = skin.vector.rotate_vector(GRAVITY, skin.quat.q_inv(q))
     # Remove gravity from the accelerometer readings
-    acc_no_gravity = acc_array - bf_grav
+    # acc_no_gravity = acc_array - bf_grav
+    acc_no_gravity = acc_array[:-1] - bf_grav
     # Now re-rotate the cleaned accelerometer readings so they line up with the
     # location of the sensors
     acc_bf = skin.vector.rotate_vector(acc_no_gravity, q)
+    aX_new = acc_bf[:,0]
+    aY_new = acc_bf[:,1]
+    aZ_new = acc_bf[:,2]
 
     # Move quaternions to the first orientation
     q = skin.quat.q_mult(q, skin.quat.q_inv(q[0]))
 
-    # clean quaternions
-
     # Position and Velocity through integration, assuming 0-velocity at t=0
-    vel = np.nan*np.ones_like(acc_bf)
-    pos = np.nan*np.ones_like(acc_bf)
+    vx = 0
+    vy = 0
+    vz = 0
+    X = [0]
+    Y = [0]
+    Z = [0]
+    for i in range(len(time_acc) - 2):
+        dt = (time_acc[i + 2] - time_acc[i + 1]) * (1/RATE)
+        dtt = (time_acc[i + 1] - time_acc[i]) * (1/RATE)
 
-    for ii in range(acc_bf.shape[1]):
-        vel[:,ii] = cumtrapz(acc_bf[:,ii], dx=1./RATE, initial=0)
-        pos[:,ii] = cumtrapz(vel[:,ii],        dx=1./RATE, initial=np.array([0, 0, 0])[ii])
+        dv = np.array([[dtt * aX_new[i]],
+                       [dtt * aY_new[i]],
+                       [dtt * (aZ_new[i] - aZ_new[0])]])
+        dv_world = np.matmul(skin.quat.convert(q[i], to='rotmat'), dv)
+
+        vx += dv_world[0][0]
+        vy += dv_world[1][0]
+        vz += dv_world[2][0]
+        X.append(X[-1] + vx * dt * 10)
+        Y.append(Y[-1] + vy * dt * 10)
+        Z.append(Z[-1] + vz * dt * 10)
 
 
+    X_base, Y_base, Z_base = dead_reckon(aX, aY, aZ, wX, wY, wZ, time_acc)
 
     # plot
     # print(q1)
     # print(pos1)
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(pos1[:, 0], pos1[:, 1], pos1[:, 2], c='r', marker='o')
-    ax.scatter(pos[:, 0], pos[:, 1], pos1[:, 2], c='g', marker='o')
+    ax.scatter(X_base, Y_base, Z_base, c='r', marker='o')
+    ax.scatter(X, Y, Z, c='b', marker='o')
     plt.show()

@@ -4,8 +4,8 @@ import skinematics_test as skin_test
 
 def main():
     # dr.dead_reckon()
-    # skin_test.skin_dead_reckon()
-    skin_test.rom_elbow()
+    skin_test.skin_dead_reckon()
+    # skin_test.rom_elbow()
 
 
 main()
