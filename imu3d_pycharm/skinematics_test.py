@@ -452,7 +452,7 @@ def skin_dead_reckon():
     print("_____________",acc_array[0])
     for i in range(len(time_acc)-1):
         time_diff = time_acc[i+1] - time_acc[i]
-        q_temp = skin.imus.kalman(RATE, acc_array[i:i+1], omega_array[i:i+1], mag_array[i:i+1])
+        q_temp = skin.imus.kalman(RATE-time_diff, acc_array[i:i+1], omega_array[i:i+1], mag_array[i:i+1])
         q.append(q_temp)
     # print(skin.imus.kalman(RATE, acc_array, omega_array, mag_array).shape) #skin.quat.calc_quat(omega_array, q_ref, RATE, 'bf')
     q = np.asarray(q)
