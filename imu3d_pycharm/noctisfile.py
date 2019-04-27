@@ -4,17 +4,20 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.cm as cm
 
-
-def dead_reckon(acc_df):
-    time = list(acc_df['time'])
-    aX = list(acc_df['aX'])
-    aY = list(acc_df['aY'])
-    aZ = list(acc_df['aZ'])
-
-    wX = list(acc_df['wX'])
-    wY = list(acc_df['wY'])
-    wZ = list(acc_df['wZ'])
-
+def dead_reckon():
+    f = open('Data/Rectangle/Accelerometer.csv', 'r')
+    readfile = csv.reader(f)
+    T = list(map(list, zip(*readfile)))
+    time = [float(i) for i in T[0]]
+    aX = [float(i) for i in T[1]]
+    aY = [float(i) for i in T[2]]
+    aZ = [float(i) for i in T[3]]
+    f = open('Data/Rectangle/Gyroscope.csv', 'r')
+    readfile = csv.reader(f)
+    T = list(map(list, zip(*readfile)))
+    wX = [float(i) for i in T[1]]
+    wY = [float(i) for i in T[2]]
+    wZ = [float(i) for i in T[3]]
 
     X = [0]
     Y = [0]
@@ -24,7 +27,7 @@ def dead_reckon(acc_df):
     vy = 0
     vz = 0
     for i in range(len(time) - 2):
-        dt = (time[i + 2] - time[i + 1]) * 10 **(+3)
+        dt = (time[i + 2] - time[i + 1]) * 10 ** (-9)
         tx = dt * wX[i + 1]
         ty = dt * wY[i + 1]
         tz = dt * wZ[i + 1]
@@ -43,7 +46,7 @@ def dead_reckon(acc_df):
         R = np.matmul(Ry, R)
         R = np.matmul(Rx, R)
         R_temp = np.linalg.inv(R)
-        dtt = (time[i + 1] - time[i]) * 10 ** (+3)
+        dtt = (time[i + 1] - time[i]) * 10 ** (-9)
 
         dv = np.array([[dtt * aX[i]],
                        [dtt * aY[i]],
@@ -60,8 +63,5 @@ def dead_reckon(acc_df):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.scatter(X, Y, Z, c='r', marker='o')
-    plt.xlabel('X')
-    plt.ylabel('Y')
 
     plt.show()
-    return 0

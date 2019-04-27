@@ -263,10 +263,10 @@ def lp_filter(data):
     # plt.show()
 
 
-    cutOff = 4000 / 6283185300 #cutoff frequency in rad/s
+    cutOff = 628.654824 #cutoff frequency in rad/s
     # 10^9 in rad/s
-    fs = 6283185300 #sampling frequency in rad/s
-    order = 10 #order of filter
+    fs = 628.31853 #sampling frequency in rad/s
+    order = 0 #order of filter
 
     #print sticker_data.ps1_dxdt2
     lped = butter_lowpass_filter(data, cutOff, fs, order)
@@ -279,10 +279,10 @@ def lp_filter(data):
     return lped
 
 def hp_filter(data):
-    cutOff = 10000000 / 6283185300 #cutoff frequency in rad/s
+    cutOff = 000.654824 #cutoff frequency in rad/s
     # 10^9 in rad/s
-    fs = 6283185300 #sampling frequency in rad/s
-    order = 10 #order of filter
+    fs = 628.31853 #sampling frequency in rad/s
+    order = 0 #order of filter
 
     #print sticker_data.ps1_dxdt2
     hped = butter_highpass_filter(data, cutOff, fs, order)
@@ -340,29 +340,21 @@ def dead_reckon(aX, aY, aZ, wX, wY, wZ, time):
         Z.append(Z[-1] + vz * dt)
     return X, Y, Z
 
-def skin_dead_reckon():
-    # load data
-    f = open('Data/Triangle/Accelerometer.csv', 'r')
-    readfile = csv.reader(f)
-    T = list(map(list, zip(*readfile)))
-    time_acc = [float(i) for i in T[0]]
-    aX = [float(i) for i in T[1]]
-    aY = [float(i) for i in T[2]]
-    aZ = [float(i) for i in T[3]]
-    f = open('Data/Triangle/Gyroscope.csv', 'r')
-    readfile = csv.reader(f)
-    T = list(map(list, zip(*readfile)))
-    time_omega = [float(i) for i in T[0]]
-    wX = [float(i) for i in T[1]]
-    wY = [float(i) for i in T[2]]
-    wZ = [float(i) for i in T[3]]
-    f = open('Data/Triangle/MagneticField.csv', 'r')
-    readfile = csv.reader(f)
-    T = list(map(list, zip(*readfile)))
-    time_mag = [float(i) for i in T[0]]
-    mX = [float(i) for i in T[1]]
-    mY = [float(i) for i in T[2]]
-    mZ = [float(i) for i in T[3]]
+def skin_dead_reckon(df):
+
+    time_acc = list(df['time'])
+
+    aX = list(df['aX'])
+    aY = list(df['aY'])
+    aZ = list(df['aZ'])
+
+    wX = list(df['wX'])
+    wY = list(df['wY'])
+    wZ = list(df['wZ'])
+
+    mX = list(df['mX'])
+    mY = list(df['mY'])
+    mZ = list(df['mZ'])
 
 
     # determine which of the sensors has the longest array
@@ -413,10 +405,9 @@ def skin_dead_reckon():
     my_sensor = MyOwnSensor(in_data=in_data)
 
     # Baseline
-    q1, pos1, vel1 = skin.imus.analytical(R_initialOrientation=skin.quat.convert( \
-        skin.imus.kalman(rate=RATE, acc=acc_array, omega=omega_array, mag=mag_array)[0], to='rotmat'), \
+    q1, pos1, vel1 = skin.imus.analytical(R_initialOrientation=np.eye(3), \
         omega=omega_array, initialPosition=np.array([0, 0, 0]), \
-        accMeasured=acc_array, rate=RATE)
+        accMeasured=acc_array, rate=100)
 
     # low pass the accelerometer value
     acc_array = lp_filter(acc_array)
@@ -424,8 +415,8 @@ def skin_dead_reckon():
     omega_array = hp_filter(omega_array)
 
     # calculate the location of gravity at time 0
-    initial_orientation = skin.quat.convert(
-        skin.imus.kalman(rate=RATE, acc=acc_array, omega=omega_array, mag=mag_array)[0], to='rotmat')
+    initial_orientation = np.eye(3) #skin.quat.convert(
+        # skin.imus.kalman(rate=10**3, acc=acc_array, omega=omega_array, mag=mag_array)[0], to='rotmat')
     print("Initial orientation: ", initial_orientation)
     g0 = np.linalg.inv(initial_orientation).dot(GRAVITY)
     print("G0", g0)
@@ -452,14 +443,16 @@ def skin_dead_reckon():
     print("_____________",acc_array[0])
     for i in range(len(time_acc)-1):
         time_diff = time_acc[i+1] - time_acc[i]
-        q_temp = skin.imus.kalman(RATE-time_diff, acc_array[i:i+1], omega_array[i:i+1], mag_array[i:i+1])
-        q.append(q_temp)
+        q_temp = skin.imus.kalman(time_diff/(10**3), acc_array[i:i+1], omega_array[i:i+1], mag_array[i:i+1])
+        q.append(skin.quat.q_mult(q_temp, q_ref))
+        # q_ref = q_temp
+        # q.append(q_temp)
     # print(skin.imus.kalman(RATE, acc_array, omega_array, mag_array).shape) #skin.quat.calc_quat(omega_array, q_ref, RATE, 'bf')
     q = np.asarray(q)
     q = np.squeeze(q)
     # print(q)
     # print(q.shape)
-    q = skin.quat.q_mult(q_ref, q)
+    # q = skin.quat.q_mult(q_ref, q)
 
     # At every timestep define where the gravity vector is
     bf_grav = skin.vector.rotate_vector(GRAVITY, skin.quat.q_inv(q))
@@ -484,8 +477,8 @@ def skin_dead_reckon():
     Y = [0]
     Z = [0]
     for i in range(len(time_acc) - 2):
-        dt = (time_acc[i + 2] - time_acc[i + 1]) * (1/RATE)
-        dtt = (time_acc[i + 1] - time_acc[i]) * (1/RATE)
+        dt = (time_acc[i + 2] - time_acc[i + 1]) * 10**(-9)
+        dtt = (time_acc[i + 1] - time_acc[i]) * 10**(-9)
 
         dv = np.array([[dtt * aX_new[i]],
                        [dtt * aY_new[i]],
@@ -499,14 +492,147 @@ def skin_dead_reckon():
         Y.append(Y[-1] + vy * dt * 10)
         Z.append(Z[-1] + vz * dt * 10)
 
+    # Position and Velocity through integration, assuming 0-velocity at t=0
+    vel = np.nan * np.ones_like(acc_bf)
+    pos = np.nan * np.ones_like(acc_bf)
+    initialPosition = np.zeros(3)
+
+    # for i in range(len(time_acc)):
+    #     time_acc[i] = time_acc[i] / 10**9
+    for ii in range(acc_array.shape[1]):
+        vel[:, ii] = cumtrapz(acc_bf[:, ii], time_acc[:-1], initial=0)
+        pos[:, ii] = cumtrapz(vel[:, ii], time_acc[:-1], initial=initialPosition[ii])
+
+    for j in range(3):
+        for i in range(pos.shape[0]):
+            pos[i][j] = pos[i][j]/10**17
+
 
     X_base, Y_base, Z_base = dead_reckon(aX, aY, aZ, wX, wY, wZ, time_acc)
-
     # plot
     # print(q1)
     # print(pos1)
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(X_base, Y_base, Z_base, c='r', marker='o')
+    # t = np.linspace(0, 2 * np.pi, len(pos1[:,0]))
+    # ax.scatter(X_base, Y_base, Z_base, c='r', marker='o')
     ax.scatter(X, Y, Z, c='b', marker='o')
+    # ax.scatter(pos[:,0], pos[:,1], pos[:,2], c='g', marker='*')
+    # ax.scatter(pos1[:, 0], pos1[:,1], pos1[:, 2], c='r', marker='*')
+    # plt.plot(np.linspace(0, 1, len(aX_new)), aX_new)
+    # plt.plot(np.linspace(0, 1, len(aX_new)), aY_new)
+    # plt.plot(np.linspace(0, 1, len(aX_new)), aZ_new)
+    # plt.plot(np.linspace(0, 1, len(wX_interp)), wX_interp)
+    # plt.plot(np.linspace(0, 1, len(wX_interp)), wY_interp)
+    # plt.plot(np.linspace(0, 1, len(wX_interp)), wZ_interp)
     plt.show()
+
+    # # Baseline
+    # q1, pos1, vel1 = skin.imus.analytical(R_initialOrientation=np.eye(3), \
+    #     omega=omega_array, initialPosition=np.array([0, 0, 0]), \
+    #     accMeasured=acc_array, rate=1)
+    #
+    # # low pass the accelerometer value
+    # acc_array = lp_filter(acc_array)
+    # # high pass the gyro value
+    # omega_array = hp_filter(omega_array)
+    #
+    # # calculate the location of gravity at time 0
+    # initial_orientation = skin.quat.convert(
+    #     skin.imus.kalman(rate=RATE, acc=acc_array, omega=omega_array, mag=mag_array)[0], to='rotmat')
+    # print("Initial orientation: ", initial_orientation)
+    # g0 = np.linalg.inv(initial_orientation).dot(GRAVITY)
+    # print("G0", g0)
+    #
+    # # calculate the quaternion that rotates the first accelerometer value into the
+    # # frame of gravity
+    # q0 = skin.vector.q_shortest_rotation(acc_array[0], g0)
+    # print(q0)
+    #
+    # # obtain the initial quaternion (aka the quaternion of the initial orientation)
+    # q_initial = skin.rotmat.convert(initial_orientation, to='quat')
+    #
+    # # rotate the initial orientation to the orientation to the direction the first
+    # # accelerometer value is facing
+    # q_ref = skin.quat.q_mult(q_initial, q0)
+    #
+    # # calculate quaternions step by step using the omega this is essentially the
+    # # "integration" of the gyroscope values this is because when you multiply
+    # # two quaternions together it is essentially the same as "rotating" from one
+    # # orientation to a second orientation we do this in the frame of the smartwatch
+    # # as the values read from the IMU is always in the reference frame of the smartwatch
+    # # q = skin.quat.calc_quat(omega_array, q_ref, RATE, 'bf')
+    # q = []
+    # print("_____________",acc_array[0])
+    # for i in range(len(time_acc)-1):
+    #     time_diff = time_acc[i+1] - time_acc[i]
+    #     q_temp = skin.imus.kalman(time_diff, acc_array[i:i+1], omega_array[i:i+1], mag_array[i:i+1])
+    #     q.append(q_temp)
+    # # print(skin.imus.kalman(RATE, acc_array, omega_array, mag_array).shape) #skin.quat.calc_quat(omega_array, q_ref, RATE, 'bf')
+    # q = np.asarray(q)
+    # q = np.squeeze(q)
+    # # print(q)
+    # # print(q.shape)
+    # q = skin.quat.q_mult(q_ref, q)
+    #
+    # # At every timestep define where the gravity vector is
+    # bf_grav = skin.vector.rotate_vector(GRAVITY, skin.quat.q_inv(q))
+    # # Remove gravity from the accelerometer readings
+    # # acc_no_gravity = acc_array - bf_grav
+    # acc_no_gravity = acc_array[:-1] - bf_grav
+    # # Now re-rotate the cleaned accelerometer readings so they line up with the
+    # # location of the sensors
+    # acc_bf = skin.vector.rotate_vector(acc_no_gravity, q)
+    # aX_new = acc_bf[:,0]
+    # aY_new = acc_bf[:,1]
+    # aZ_new = acc_bf[:,2]
+    #
+    # # Move quaternions to the first orientation
+    # q = skin.quat.q_mult(q, skin.quat.q_inv(q[0]))
+    #
+    # # Position and Velocity through integration, assuming 0-velocity at t=0
+    # # vx = 0
+    # # vy = 0
+    # # vz = 0
+    # # X = [0]
+    # # Y = [0]
+    # # Z = [0]
+    # # for i in range(len(time_acc) - 2):
+    # #     dt = (time_acc[i + 2] - time_acc[i + 1]) * (1/100)
+    # #     dtt = (time_acc[i + 1] - time_acc[i]) * (1/100)
+    # #
+    # #     dv = np.array([[dtt * aX_new[i]],
+    # #                    [dtt * aY_new[i]],
+    # #                    [dtt * (aZ_new[i] - aZ_new[0])]])
+    # #     dv_world = np.matmul(skin.quat.convert(q[i], to='rotmat'), dv)
+    # #
+    # #     vx += dv_world[0][0]
+    # #     vy += dv_world[1][0]
+    # #     vz += dv_world[2][0]
+    # #     X.append(X[-1] + vx * dt * 10)
+    # #     Y.append(Y[-1] + vy * dt * 10)
+    # #     Z.append(Z[-1] + vz * dt * 10)
+    # initialPosition = np.zeros(3)
+    # vel = np.nan*np.ones_like(acc_bf)
+    # pos = np.nan*np.ones_like(acc_bf)
+    #
+    # print(acc_bf.shape, len(time_acc))
+    #
+    # for ii in range(acc_bf.shape[1]):
+    #     vel[:,ii] = cumtrapz(acc_bf[:,ii], time_acc[:-1], initial=0)
+    #     pos[:,ii] = cumtrapz(vel[:,ii], time_acc[:-1], initial=initialPosition[ii])
+    #
+    #
+    # X_base, Y_base, Z_base = dead_reckon(aX, aY, aZ, wX, wY, wZ, time_acc)
+    #
+    # # plot
+    # # print(q1)
+    # # print(pos1)
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection='3d')
+    # # ax.scatter(X_base, Y_base, Z_base, c='r', marker='o')
+    # # ax.scatter(X, Y, Z, c='b', marker='o')
+    # ax.scatter(pos1[:,0], pos1[:,1], pos1[:,2], c='g', marker='o')
+    # # ax.scatter(pos[:,0], pos[:,1], pos[:,2], c='r', marker='o')
+    #
+    # plt.show()
