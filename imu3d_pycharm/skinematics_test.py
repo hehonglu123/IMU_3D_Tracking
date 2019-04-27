@@ -340,7 +340,58 @@ def dead_reckon(aX, aY, aZ, wX, wY, wZ, time):
         Z.append(Z[-1] + vz * dt)
     return X, Y, Z
 
-def skin_dead_reckon(df):
+def old_data_triangle():
+    f = open('Data/Triangle/Accelerometer.csv', 'r')
+
+    readfile = csv.reader(f)
+    T = list(map(list, zip(*readfile)))
+    time_acc = [float(i) for i in T[0]]
+    aX = [float(i) for i in T[1]]
+    aY = [float(i) for i in T[2]]
+    aZ = [float(i) for i in T[3]]
+    f = open('Data/Triangle/Gyroscope.csv', 'r')
+    readfile = csv.reader(f)
+    T = list(map(list, zip(*readfile)))
+    time_omega = [float(i) for i in T[0]]
+    wX = [float(i) for i in T[1]]
+    wY = [float(i) for i in T[2]]
+    wZ = [float(i) for i in T[3]]
+    f = open('Data/Triangle/MagneticField.csv', 'r')
+    readfile = csv.reader(f)
+    T = list(map(list, zip(*readfile)))
+    time_mag = [float(i) for i in T[0]]
+    mX = [float(i) for i in T[1]]
+    mY = [float(i) for i in T[2]]
+    mZ = [float(i) for i in T[3]]
+
+    return time_acc, aX, aY, aZ, wX, wY, wZ, mX, mY, mZ
+
+def old_data_rectangle():
+    f = open('Data/Rectangle/Accelerometer.csv', 'r')
+    readfile = csv.reader(f)
+    T = list(map(list, zip(*readfile)))
+    time_acc = [float(i) for i in T[0]]
+    aX = [float(i) for i in T[1]]
+    aY = [float(i) for i in T[2]]
+    aZ = [float(i) for i in T[3]]
+    f = open('Data/Rectangle/Gyroscope.csv', 'r')
+    readfile = csv.reader(f)
+    T = list(map(list, zip(*readfile)))
+    time_omega = [float(i) for i in T[0]]
+    wX = [float(i) for i in T[1]]
+    wY = [float(i) for i in T[2]]
+    wZ = [float(i) for i in T[3]]
+    f = open('Data/Rectangle/MagneticField.csv', 'r')
+    readfile = csv.reader(f)
+    T = list(map(list, zip(*readfile)))
+    time_mag = [float(i) for i in T[0]]
+    mX = [float(i) for i in T[1]]
+    mY = [float(i) for i in T[2]]
+    mZ = [float(i) for i in T[3]]
+
+    return time_acc, aX, aY, aZ, wX, wY, wZ, mX, mY, mZ
+
+def skin_dead_reckon(df, old_data, type):
 
     time_acc = list(df['time'])
 
@@ -355,6 +406,13 @@ def skin_dead_reckon(df):
     mX = list(df['mX'])
     mY = list(df['mY'])
     mZ = list(df['mZ'])
+
+    if old_data and type == 'triangle':
+        time_acc, aX, aY, aZ, wY, wX, wZ, mX, mY, mZ = old_data_triangle()
+    if old_data and type == 'rectangle':
+        time_acc, aX, aY, aZ, wY, wX, wZ, mX, mY, mZ = old_data_rectangle()
+
+
 
 
     # determine which of the sensors has the longest array

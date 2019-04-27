@@ -1,3 +1,5 @@
+from sympy import true
+
 import deadreckoning as dr
 import skinematics_test as skin_test
 import operator
@@ -38,8 +40,10 @@ def main():
     # plt.plot(acc_df['wX'])
     # plt.show()
     # print(acc_df[0:10])
-    dr.dead_reckon(acc_df)
-    skin_test.skin_dead_reckon(acc_df)
+    # dr.dead_reckon(acc_df)
+    skin_test.skin_dead_reckon(acc_df, False, "")
+    skin_test.skin_dead_reckon(acc_df, True, "triangle")
+    skin_test.skin_dead_reckon(acc_df, True, "rectangle")
     # skin_test.rom_elbow()
 
 
