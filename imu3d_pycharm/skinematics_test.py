@@ -6,11 +6,201 @@ from skinematics.sensors.manual import MyOwnSensor
 import matplotlib.pyplot as plt
 from scipy.integrate import cumtrapz
 from scipy.signal import butter, lfilter
+from scipy.signal import medfilt
 from scipy.signal import freqs
 
 RATE = 10**9
 GRAVITY = np.r_[0, 0, 9.8]
 
+
+def analytical(R_initialOrientation=np.eye(3),
+               omega=np.zeros((5, 3)),
+               initialPosition=np.zeros(3),
+               accMeasured=np.column_stack((np.zeros((5, 2)), 9.81 * np.ones(5))),
+               rate=225, time_array=np.zeros(6000)):
+    ''' Reconstruct position and orientation with an analytical solution,
+    from angular velocity and linear acceleration.
+    Assumes a start in a stationary position. No compensation for drift.
+
+    Parameters
+    ----------
+    R_initialOrientation: ndarray(3,3)
+        Rotation matrix describing the initial orientation of the sensor,
+        except a mis-orienation with respect to gravity
+    omega : ndarray(N,3)
+        Angular velocity, in [rad/s]
+    initialPosition : ndarray(3,)
+        initial Position, in [m]
+    accMeasured : ndarray(N,3)
+        Linear acceleration, in [m/s^2]
+    rate : float
+        sampling rate, in [Hz]
+
+    Returns
+    -------
+    q : ndarray(N,3)
+        Orientation, expressed as a quaternion vector
+    pos : ndarray(N,3)
+        Position in space [m]
+    vel : ndarray(N,3)
+        Velocity in space [m/s]
+
+    Example
+    -------
+
+    >>> q1, pos1 = analytical(R_initialOrientation, omega, initialPosition, acc, rate)
+
+    '''
+
+    # Transform recordings to angVel/acceleration in space --------------
+
+    # Orientation of \vec{g} with the sensor in the "R_initialOrientation"
+    g = constants.g
+    g0 = np.linalg.inv(R_initialOrientation).dot(np.r_[0, 0, g])
+
+    # for the remaining deviation, assume the shortest rotation to there
+    q0 = vector.q_shortest_rotation(accMeasured[0], g0)
+
+    q_initial = rotmat.convert(R_initialOrientation, to='quat')
+
+    # combine the two, to form a reference orientation. Note that the sequence
+    # is very important!
+    q_ref = quat.q_mult(q_initial, q0)
+
+    # Calculate orientation q by "integrating" omega -----------------
+    q = quat.calc_quat(omega, q_ref, rate, 'bf', time_array)
+
+    # Acceleration, velocity, and position ----------------------------
+    # From q and the measured acceleration, get the \frac{d^2x}{dt^2}
+    g_v = np.r_[0, 0, g]
+    accReSensor = accMeasured - vector.rotate_vector(g_v, quat.q_inv(q))
+    accReSpace = vector.rotate_vector(accReSensor, q)
+
+    # Make the first position the reference position
+    q = quat.q_mult(q, quat.q_inv(q[0]))
+
+    # compensate for drift
+    # drift = np.mean(accReSpace, 0)
+    # accReSpace -= drift*0.7
+
+    # Position and Velocity through integration, assuming 0-velocity at t=0
+    vel = np.nan * np.ones_like(accReSpace)
+    pos = np.nan * np.ones_like(accReSpace)
+
+    for i in range(len(accReSpace)):
+        if (i < len(accReSpace) - 1):
+            dt = (time_array[i + 1] - time_array[i]) * 10 ** (-9)
+        for ii in range(accReSpace.shape[1]):
+            if (i == 0):
+                vel[i, :] = accReSpace[i, :] * dt
+                pos[i, :] = vel[i, :] * dt
+            else:
+                vel[i, :] = vel[i - 1, :] + accReSpace[i, :] * dt
+                pos[i, :] = pos[i - 1, :] + vel[i, :] * dt
+            print(vel[i, 0])
+
+    # for ii in range(accReSpace.shape[1]):
+    #     vel[:,ii] = cumtrapz(accReSpace[:,ii], dx=1./rate, initial=0)
+    #     pos[:,ii] = cumtrapz(vel[:,ii],        dx=1./rate, initial=initialPosition[ii])
+
+    return (q, pos, vel)
+
+
+def calc_quat(omega, q0, rate, CStype, time_array):
+    '''
+    Take an angular velocity (in rad/s), and convert it into the
+    corresponding orientation quaternion.
+
+    Parameters
+    ----------
+    omega : array, shape (3,) or (N,3)
+        angular velocity [rad/s].
+    q0 : array (3,)
+        vector-part of quaternion (!!)
+    rate : float
+        sampling rate (in [Hz])
+    CStype:  string
+        coordinate_system, space-fixed ("sf") or body_fixed ("bf")
+
+    Returns
+    -------
+    quats : array, shape (N,4)
+        unit quaternion vectors.
+
+    Notes
+    -----
+    1) The output has the same length as the input. As a consequence, the last velocity vector is ignored.
+    2) For angular velocity with respect to space ("sf"), the orientation is given by
+
+      .. math::
+          q(t) = \\Delta q(t_n) \\circ \\Delta q(t_{n-1}) \\circ ... \\circ \\Delta q(t_2) \\circ \\Delta q(t_1) \\circ q(t_0)
+
+      .. math::
+        \\Delta \\vec{q_i} = \\vec{n(t)}\\sin (\\frac{\\Delta \\phi (t_i)}{2}) = \\frac{\\vec \\omega (t_i)}{\\left| {\\vec \\omega (t_i)} \\right|}\\sin \\left( \\frac{\\left| {\\vec \\omega ({t_i})} \\right|\\Delta t}{2} \\right)
+
+    3) For angular velocity with respect to the body ("bf"), the sequence of quaternions is inverted.
+
+    4) Take care that you choose a high enough sampling rate!
+
+    Examples
+    --------
+    >>> v0 = np.r_[0., 0., 100.] * np.pi/180.
+    >>> omega = np.tile(v0, (1000,1))
+    >>> rate = 100
+    >>> out = quat.calc_quat(omega, [0., 0., 0.], rate, 'sf')
+    array([[ 1.        ,  0.        ,  0.        ,  0.        ],
+       [ 0.99996192,  0.        ,  0.        ,  0.00872654],
+       [ 0.9998477 ,  0.        ,  0.        ,  0.01745241],
+       ...,
+       [-0.74895572,  0.        ,  0.        ,  0.66262005],
+       [-0.75470958,  0.        ,  0.        ,  0.65605903],
+       [-0.76040597,  0.        ,  0.        ,  0.64944805]])
+    '''
+
+    omega_05 = np.atleast_2d(omega).copy()
+
+    # The following is (approximately) the quaternion-equivalent of the trapezoidal integration (cumtrapz)
+    if omega_05.shape[1] > 1:
+        omega_05[:-1] = 0.5 * (omega_05[:-1] + omega_05[1:])
+
+    omega_t = np.sqrt(np.sum(omega_05 ** 2, 1))
+    omega_nonZero = omega_t > 0
+
+    # initialize the quaternion
+    q_delta = np.zeros(omega_05.shape)
+    q_pos = np.zeros((len(omega_05), 4))
+    q_pos[0, :] = unit_q(q0)
+
+    # magnitude of position steps
+
+    for ii in range(len(omega_05) - 1):
+        if (ii > 0):
+            rate = float(10 ** 9) / (time_array[ii] - time_array[ii - 1])
+        else:
+            rate = 225
+        dq_total = np.sin(omega_t[omega_nonZero] / (2. * rate))
+
+        q_delta[omega_nonZero, :] = omega_05[omega_nonZero, :] * np.tile(dq_total / omega_t[omega_nonZero], (3, 1)).T
+
+        q1 = unit_q(q_delta[ii, :])
+        q2 = q_pos[ii, :]
+        if CStype == 'sf':
+            qm = q_mult(q1, q2)
+        elif CStype == 'bf':
+            qm = q_mult(q2, q1)
+        else:
+            print('I don''t know this type of coordinate system!')
+        q_pos[ii + 1, :] = qm
+
+    return q_pos
+
+***************************************************************************************************************
+def calc_rate(df):
+    length=len(df['time'])
+    end=df['time'][length-1]
+    begin=df['time'][0]
+    rate=1/((end-begin)/(10**9*length))
+    return rate
 def rom_elbow():
     l_elbow = 50
     print("rom elbow")
@@ -263,10 +453,10 @@ def lp_filter(data):
     # plt.show()
 
 
-    cutOff = 628.654824 #cutoff frequency in rad/s
+    cutOff = 428.654824 #cutoff frequency in rad/s
     # 10^9 in rad/s
     fs = 628.31853 #sampling frequency in rad/s
-    order = 0 #order of filter
+    order = 1 #order of filter
 
     #print sticker_data.ps1_dxdt2
     lped = butter_lowpass_filter(data, cutOff, fs, order)
@@ -279,10 +469,10 @@ def lp_filter(data):
     return lped
 
 def hp_filter(data):
-    cutOff = 000.654824 #cutoff frequency in rad/s
+    cutOff = 100.654824 #cutoff frequency in rad/s
     # 10^9 in rad/s
     fs = 628.31853 #sampling frequency in rad/s
-    order = 0 #order of filter
+    order = 1 #order of filter
 
     #print sticker_data.ps1_dxdt2
     hped = butter_highpass_filter(data, cutOff, fs, order)
@@ -340,8 +530,23 @@ def dead_reckon(aX, aY, aZ, wX, wY, wZ, time):
         Z.append(Z[-1] + vz * dt)
     return X, Y, Z
 
+
+def running_mean(l, N):
+    sum = 0
+    result = list(0 for x in l)
+
+    for i in range(0, N):
+        sum = sum + l[i]
+        result[i] = sum / (i + 1)
+
+    for i in range(N, len(l)):
+        sum = sum - l[i - N] + l[i]
+        result[i] = sum / N
+
+    return result
+
 def old_data_triangle():
-    f = open('Data/Triangle/Accelerometer.csv', 'r')
+    f = open('Data/Shape3/Accelerometer.csv', 'r')
 
     readfile = csv.reader(f)
     T = list(map(list, zip(*readfile)))
@@ -349,14 +554,14 @@ def old_data_triangle():
     aX = [float(i) for i in T[1]]
     aY = [float(i) for i in T[2]]
     aZ = [float(i) for i in T[3]]
-    f = open('Data/Triangle/Gyroscope.csv', 'r')
+    f = open('Data/Shape3/Gyroscope.csv', 'r')
     readfile = csv.reader(f)
     T = list(map(list, zip(*readfile)))
     time_omega = [float(i) for i in T[0]]
     wX = [float(i) for i in T[1]]
     wY = [float(i) for i in T[2]]
     wZ = [float(i) for i in T[3]]
-    f = open('Data/Triangle/MagneticField.csv', 'r')
+    f = open('Data/Shape3/MagneticField.csv', 'r')
     readfile = csv.reader(f)
     T = list(map(list, zip(*readfile)))
     time_mag = [float(i) for i in T[0]]
@@ -463,15 +668,21 @@ def skin_dead_reckon(df, old_data, type):
     my_sensor = MyOwnSensor(in_data=in_data)
 
     # Baseline
-    q1, pos1, vel1 = skin.imus.analytical(R_initialOrientation=np.eye(3), \
-        omega=omega_array, initialPosition=np.array([0, 0, 0]), \
-        accMeasured=acc_array, rate=100)
+
 
     # low pass the accelerometer value
-    acc_array = lp_filter(acc_array)
+    # acc_array = lp_filter(acc_array)
     # high pass the gyro value
-    omega_array = hp_filter(omega_array)
-
+    # omega_array = hp_filter(omega_array)
+    q1, pos1, vel1 = skin.imus.analytical(R_initialOrientation=np.eye(3), \
+        omega=omega_array, initialPosition=np.array([0, 0, 0]), \
+        accMeasured=acc_array, rate=225, time_array=time_acc)
+    aX=running_mean(aX,5)
+    aY=running_mean(aY,5)
+    aZ=running_mean(aZ,5)
+    wX=running_mean(wX,5)
+    wY=running_mean(wY,5)
+    wZ=running_mean(wZ,5)
     # calculate the location of gravity at time 0
     initial_orientation = np.eye(3) #skin.quat.convert(
         # skin.imus.kalman(rate=10**3, acc=acc_array, omega=omega_array, mag=mag_array)[0], to='rotmat')
@@ -501,7 +712,7 @@ def skin_dead_reckon(df, old_data, type):
     print("_____________",acc_array[0])
     for i in range(len(time_acc)-1):
         time_diff = time_acc[i+1] - time_acc[i]
-        q_temp = skin.imus.kalman(time_diff/(10**3), acc_array[i:i+1], omega_array[i:i+1], mag_array[i:i+1])
+        q_temp = skin.imus.kalman(time_diff/(10**9), acc_array[i:i+1], omega_array[i:i+1], mag_array[i:i+1])
         q.append(skin.quat.q_mult(q_temp, q_ref))
         # q_ref = q_temp
         # q.append(q_temp)
@@ -534,21 +745,53 @@ def skin_dead_reckon(df, old_data, type):
     X = [0]
     Y = [0]
     Z = [0]
+    gravity_vector=np.array([[np.average(aX[0:2])],[np.average(aY[0:2])],[np.average(aZ[0:2])]])
+
+
     for i in range(len(time_acc) - 2):
         dt = (time_acc[i + 2] - time_acc[i + 1]) * 10**(-9)
         dtt = (time_acc[i + 1] - time_acc[i]) * 10**(-9)
-
-        dv = np.array([[dtt * aX_new[i]],
-                       [dtt * aY_new[i]],
-                       [dtt * (aZ_new[i] - aZ_new[0])]])
+        cur_gravity = np.matmul(np.linalg.inv(skin.quat.convert(q[i], to='rotmat')), gravity_vector)
+        aX_cur=aX[i] - cur_gravity[0][0]
+        aY_cur=aY[i] - cur_gravity[1][0]
+        aZ_cur=aZ[i] - cur_gravity[2][0]
+        if (np.sqrt(aX_cur**2+aY_cur**2+aZ_cur**2)>10):
+            aX_cur*=0.9
+            aY_cur*=0.9
+            aZ_cur*=0.9
+        dv = np.array([[dtt * aX_cur],
+                       [dtt * aY_cur],
+                       [dtt * aZ_cur]])
         dv_world = np.matmul(skin.quat.convert(q[i], to='rotmat'), dv)
 
         vx += dv_world[0][0]
         vy += dv_world[1][0]
         vz += dv_world[2][0]
-        X.append(X[-1] + vx * dt * 10)
-        Y.append(Y[-1] + vy * dt * 10)
-        Z.append(Z[-1] + vz * dt * 10)
+        # print(vy,aY_cur)
+        # if (np.sqrt(vx**2+vy**2+vz**2)>0.5):
+        #     vx*=0.9
+        #     vy*=0.9
+        #     vz*=0.9
+
+        X.append(X[-1] + vx * dt)
+        Y.append(Y[-1] + vy * dt)
+        Z.append(Z[-1] + vz * dt)
+
+    # for i in range(len(time_acc) - 2):
+    #     dt = (time_acc[i + 2] - time_acc[i + 1]) * 10**(-9)
+    #     dtt = (time_acc[i + 1] - time_acc[i]) * 10**(-9)
+    #
+    #     dv = np.array([[dtt * aX_new[i]],
+    #                    [dtt * aY_new[i]],
+    #                    [dtt * (aZ_new[i]-aZ_new[0])]])
+    #     # dv_world = np.matmul(skin.quat.convert(q[i], to='rotmat'), dv)
+    #
+    #     vx += dv[0][0]
+    #     vy += dv[1][0]
+    #     vz += dv[2][0]
+    #     X.append(X[-1] + vx * dt * 10)
+    #     Y.append(Y[-1] + vy * dt * 10)
+    #     Z.append(Z[-1] + vz * dt * 10)
 
     # Position and Velocity through integration, assuming 0-velocity at t=0
     vel = np.nan * np.ones_like(acc_bf)
@@ -576,7 +819,7 @@ def skin_dead_reckon(df, old_data, type):
     # ax.scatter(X_base, Y_base, Z_base, c='r', marker='o')
     # ax.scatter(X, Y, Z, c='b', marker='o')
     # ax.scatter(pos[:,0], pos[:,1], pos[:,2], c='g', marker='*')
-    # ax.scatter(pos1[:, 0], pos1[:,1], pos1[:, 2], c='r', marker='*')
+    ax.scatter(pos1[:, 0], pos1[:,1], pos1[:, 2], c='r', marker='*')
     # plt.plot(np.linspace(0, 1, len(aX_new)), aX_new)
     # plt.plot(np.linspace(0, 1, len(aX_new)), aY_new)
     # plt.plot(np.linspace(0, 1, len(aX_new)), aZ_new)

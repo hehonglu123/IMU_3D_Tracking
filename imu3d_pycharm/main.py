@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import noctisfile
 
 def pull_and_sort_data():
-    df = pd.read_csv('Data/Self/Accelerometer.csv', sep='\s*,\s*',
+    df = pd.read_csv('Data/Self/3DO.csv', sep='\s*,\s*',
                      header=0, encoding='ascii', engine='python')
     # print(acc_df)
     df = df.sort_values(by='time')
@@ -36,14 +36,15 @@ def pull_and_sort_data():
 
 def main():
     acc_df = pull_and_sort_data()
+
     # noctisfile.dead_reckon()
     # plt.plot(acc_df['wX'])
     # plt.show()
     # print(acc_df[0:10])
     # dr.dead_reckon(acc_df)
-    skin_test.skin_dead_reckon(acc_df, False, "")
+    # skin_test.skin_dead_reckon(acc_df, False, "")
     skin_test.skin_dead_reckon(acc_df, True, "triangle")
-    skin_test.skin_dead_reckon(acc_df, True, "rectangle")
+    # skin_test.skin_dead_reckon(acc_df, True, "rectangle")
     # skin_test.rom_elbow()
 
 

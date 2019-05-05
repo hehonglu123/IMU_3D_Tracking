@@ -116,15 +116,6 @@ public class MainActivity extends AppCompatActivity
                 accArrayY.add(String.valueOf(sensorEvent.values[1]));
                 accArrayZ.add(String.valueOf(sensorEvent.values[2]));
 
-                gyroTime.add(String.valueOf(write_timestamp));
-                gyroArrayX.add(String.valueOf(gyro[0]));
-                gyroArrayY.add(String.valueOf(gyro[1]));
-                gyroArrayZ.add(String.valueOf(gyro[2]));
-
-                magTime.add(String.valueOf(write_timestamp));
-                magArrayX.add(String.valueOf(mag[0]));
-                magArrayY.add(String.valueOf(mag[1]));
-                magArrayZ.add(String.valueOf(mag[2]));
             }
             else if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
                 gyro[0] = sensorEvent.values[0];
@@ -136,15 +127,6 @@ public class MainActivity extends AppCompatActivity
                 gyroArrayY.add(String.valueOf(sensorEvent.values[1]));
                 gyroArrayZ.add(String.valueOf(sensorEvent.values[2]));
 
-                accTime.add(String.valueOf(write_timestamp));
-                accArrayX.add(String.valueOf(acc[0]));
-                accArrayY.add(String.valueOf(acc[1]));
-                accArrayZ.add(String.valueOf(acc[2]));
-
-                magTime.add(String.valueOf(write_timestamp));
-                magArrayX.add(String.valueOf(mag[0]));
-                magArrayY.add(String.valueOf(mag[1]));
-                magArrayZ.add(String.valueOf(mag[2]));
             }
             else if (sensorEvent.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
                 mag[0] = sensorEvent.values[0];
@@ -156,32 +138,6 @@ public class MainActivity extends AppCompatActivity
                 magArrayY.add(String.valueOf(sensorEvent.values[1]));
                 magArrayZ.add(String.valueOf(sensorEvent.values[2]));
 
-                accTime.add(String.valueOf(write_timestamp));
-                accArrayX.add(String.valueOf(acc[0]));
-                accArrayY.add(String.valueOf(acc[1]));
-                accArrayZ.add(String.valueOf(acc[2]));
-
-                gyroTime.add(String.valueOf(write_timestamp));
-                gyroArrayX.add(String.valueOf(gyro[0]));
-                gyroArrayY.add(String.valueOf(gyro[1]));
-                gyroArrayZ.add(String.valueOf(gyro[2]));
-            }
-        }
-        else{
-            if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                acc[0] = sensorEvent.values[0];
-                acc[1] = sensorEvent.values[1];
-                acc[2] = sensorEvent.values[2];
-            }
-            else if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-                gyro[0] = sensorEvent.values[0];
-                gyro[1] = sensorEvent.values[1];
-                gyro[2] = sensorEvent.values[2];
-            }
-            else if (sensorEvent.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-                mag[0] = sensorEvent.values[0];
-                mag[1] = sensorEvent.values[1];
-                mag[2] = sensorEvent.values[2];
             }
         }
 
@@ -201,7 +157,11 @@ public class MainActivity extends AppCompatActivity
                         Log.d("Opening file", "asdf");
                         try {
                             outFD_acc = openFileOutput("ECE498_sensor_file_acc" + file_counter + ".csv", MODE_APPEND);
-                            outFD_acc.write("time,aX,aY,aZ,wX,wY,wZ,mX,mY,mZ\n".getBytes());
+                            outFD_acc.write("time,aX,aY,aZ\n".getBytes());
+                            outFD_gyro = openFileOutput("ECE498_sensor_file_gyro" + file_counter + ".csv", MODE_APPEND);
+                            outFD_gyro.write("time,gX,gY,gZ\n".getBytes());
+                            outFD_mag = openFileOutput("ECE498_sensor_file_gyro" + file_counter + ".csv", MODE_APPEND);
+                            outFD_mag.write("time,gX,gY,gZ\n".getBytes());
                         } catch (FileNotFoundException e) {
                             Log.d("file", "failed to open file");
                             e.printStackTrace();
@@ -233,207 +193,81 @@ public class MainActivity extends AppCompatActivity
                         Log.d("acc", accT+" "+accX+" "+accY+" "+accZ);
                         try {
                             outFD_acc.write(accT.getBytes());
+                            outFD_gyro.write(gyroT.getBytes());
+                            outFD_mag.write(magT.getBytes());
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                         try {
                             outFD_acc.write(",".getBytes());
+                            outFD_gyro.write(",".getBytes());
+                            outFD_mag.write(",".getBytes());
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                         try {
                             outFD_acc.write(accX.getBytes());
+                            outFD_gyro.write(gyroX.getBytes());
+                            outFD_mag.write(magX.getBytes());
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                         try {
                             outFD_acc.write(",".getBytes());
+                            outFD_gyro.write(",".getBytes());
+                            outFD_mag.write(",".getBytes());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                         try {
                             outFD_acc.write(accY.getBytes());
+                            outFD_gyro.write(gyroY.getBytes());
+                            outFD_mag.write(magY.getBytes());
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                         try {
                             outFD_acc.write(",".getBytes());
+                            outFD_gyro.write(",".getBytes());
+                            outFD_mag.write(",".getBytes());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                         try {
                             outFD_acc.write(accZ.getBytes());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            outFD_acc.write(",".getBytes());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            outFD_acc.write(gyroX.getBytes());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            outFD_acc.write(",".getBytes());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            outFD_acc.write(gyroY.getBytes());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            outFD_acc.write(",".getBytes());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            outFD_acc.write(gyroZ.getBytes());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            outFD_acc.write(",".getBytes());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            outFD_acc.write(magX.getBytes());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            outFD_acc.write(",".getBytes());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            outFD_acc.write(magY.getBytes());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            outFD_acc.write(",".getBytes());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            outFD_acc.write(magZ.getBytes());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                            outFD_gyro.write(gyroZ.getBytes());
+                            outFD_mag.write(magZ.getBytes());
 
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            outFD_acc.write(",".getBytes());
+                            outFD_gyro.write(",".getBytes());
+                            outFD_mag.write(",".getBytes());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
                         try {
                             outFD_acc.write("\n".getBytes());
+                            outFD_gyro.write("\n".getBytes());
+                            outFD_mag.write("\n".getBytes());
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
-//                    for(int i = 0 ; i < magArrayX.size() ; i++) {
-//                        String magT = magTime.get(i);
-//                        String magX = magArrayX.get(i);
-//                        String magY = magArrayY.get(i);
-//                        String magZ = magArrayZ.get(i);
-//                        try {
-//                            outFD_mag.write(magT.getBytes());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        try {
-//                            outFD_mag.write(",".getBytes());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        try {
-//                            outFD_mag.write(magX.getBytes());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        try {
-//                            outFD_mag.write(",".getBytes());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        try {
-//                            outFD_mag.write(magY.getBytes());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        try {
-//                            outFD_mag.write(",".getBytes());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        try {
-//                            outFD_mag.write(magZ.getBytes());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        try {
-//                            outFD_mag.write("\n".getBytes());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                    for(int i = 0 ; i < gyroArrayX.size() ; i++) {
-//                        String gyroT = gyroTime.get(i);
-//                        String gyroX = gyroArrayX.get(i);
-//                        String gyroY = gyroArrayY.get(i);
-//                        String gyroZ = gyroArrayZ.get(i);
-//                        try {
-//                            outFD_gyro.write(gyroT.getBytes());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        try {
-//                            outFD_gyro.write(",".getBytes());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        try {
-//                            outFD_gyro.write(gyroX.getBytes());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        try {
-//                            outFD_gyro.write(",".getBytes());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        try {
-//                            outFD_gyro.write(gyroY.getBytes());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        try {
-//                            outFD_gyro.write(",".getBytes());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        try {
-//                            outFD_gyro.write(gyroZ.getBytes());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        try {
-//                            outFD_gyro.write("\n".getBytes());
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
 
-//                    try {
-//                        outFD_gyro.close();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
                     try {
                         outFD_acc.close();
+                        outFD_gyro.close();
+                        outFD_mag.close();
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
