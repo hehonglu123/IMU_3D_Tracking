@@ -61,21 +61,21 @@ def hp_filter(data, cutOff=400, fs=628):
 
 
 def old_data_rectangle():
-    f = open('Data/3DShape2/Accelerometer.csv', 'r')
+    f = open('Data/Triangle/Accelerometer.csv', 'r')
     readfile = csv.reader(f)
     T = list(map(list, zip(*readfile)))
     time_acc = [float(i) for i in T[0]]
     aX = [float(i) for i in T[1]]
     aY = [float(i) for i in T[2]]
     aZ = [float(i) for i in T[3]]
-    f = open('Data/3DShape2/Gyroscope.csv', 'r')
+    f = open('Data/Triangle/Gyroscope.csv', 'r')
     readfile = csv.reader(f)
     T = list(map(list, zip(*readfile)))
     time_omega = [float(i) for i in T[0]]
     wX = [float(i) for i in T[1]]
     wY = [float(i) for i in T[2]]
     wZ = [float(i) for i in T[3]]
-    f = open('Data/3DShape2/MagneticField.csv', 'r')
+    f = open('Data/Triangle/MagneticField.csv', 'r')
     readfile = csv.reader(f)
     T = list(map(list, zip(*readfile)))
     time_mag = [float(i) for i in T[0]]
@@ -116,7 +116,7 @@ def grab_data_from_df():
     time_array = np.zeros((max_len))
 
     #averaging filter
-    N=50
+    N=30
     aX_temp=np.convolve(aX_interp, np.ones((N,)) / N, mode='valid')
     aY_temp=np.convolve(aY_interp, np.ones((N,)) / N, mode='valid')
     aZ_temp=np.convolve(aZ_interp, np.ones((N,)) / N, mode='valid')
@@ -124,12 +124,14 @@ def grab_data_from_df():
     wY_temp = np.convolve(wY_interp, np.ones((N,)) / N, mode='valid')
     wZ_temp = np.convolve(wZ_interp, np.ones((N,)) / N, mode='valid')
 
+
     aX_interp[int(N/2)-1:int(-N/2)]=aX_temp
     aY_interp[int(N/2)-1:int(-N/2)]=aY_temp
     aZ_interp[int(N/2)-1:int(-N/2)]=aZ_temp
     wX_interp[int(N / 2) - 1:int(-N / 2)] = wX_temp
     wY_interp[int(N / 2) - 1:int(-N / 2)] = wY_temp
     wZ_interp[int(N / 2) - 1:int(-N / 2)] = wZ_temp
+
 
     for i in range(max_len):
         acc_array[i, 0] = aX_interp[i]
@@ -145,6 +147,10 @@ def grab_data_from_df():
         mag_array[i, 2] = mZ_interp[i]
     for i in range(max_len):
         time_array[i] = time_acc_interp[i]
+
+    #gyro drift
+    mean=np.mean(omega_array,0)
+    omega_array-=0.7*mean
 
     return acc_array, omega_array, mag_array, time_array
 
@@ -272,14 +278,9 @@ def unit_q(inData):
     return outData
 
 
-def calc_quat(omega, q0, CStype, time_array):
-    drift = np.mean(omega, 0)
-    omega -= drift * 0.7
+def calc_quat(omega, q0, time_array):
 
-    print(q0)
     omega_05 = np.atleast_2d(omega).copy()
-
-    # The following is (approximately) the quaternion-equivalent of the trapezoidal integration (cumtrapz)
     if omega_05.shape[1] > 1:
         omega_05[:-1] = 0.5 * (omega_05[:-1] + omega_05[1:])
 
@@ -292,8 +293,6 @@ def calc_quat(omega, q0, CStype, time_array):
     q_pos[0, :] = unit_q(q0)
 
 
-    # magnitude of position steps
-
     for ii in range(len(omega_05) - 1):
         if (ii > 0):
             rate = float(10 ** 9) / (time_array[ii] - time_array[ii - 1])
@@ -305,12 +304,8 @@ def calc_quat(omega, q0, CStype, time_array):
 
         q1 = unit_q(q_delta[ii, :])
         q2 = q_pos[ii, :]
-        if CStype == 'sf':
-            qm = multiply_quaternions(q1, q2)
-        elif CStype == 'bf':
-            qm = multiply_quaternions(q2, q1)
-        else:
-            print('I don''t know this type of coordinate system!')
+        qm = multiply_quaternions(q2, q1)
+
         q_pos[ii + 1, :] = qm
 
     return q_pos
@@ -407,7 +402,7 @@ def self():
     q_ref = multiply_quaternions(q_initial, q0)
 
     # Calculate orientation q by "integrating" omega -----------------
-    q = calc_quat(omega, q_ref, 'bf', time_array)
+    q = calc_quat(omega, q_ref, time_array)
 
     md = mad.MadgwickAHRS()
     tq = []
@@ -425,7 +420,7 @@ def self():
 
     q = normalize(q * 0.6 + tq * 0.4)
     # q = q * 0.5 + tq * 0.5
-    # Acceleration, velocity, and position ----------------------------
+    # Acceleration, velocity, and positicaon ----------------------------
     # From q and the measured acceleration, get the \frac{d^2x}{dt^2}
     g_v = np.r_[0, 0, g]
 
@@ -456,33 +451,10 @@ def self():
         for ii in range(accReSpace.shape[1]):
             if (i == 0):
                 vel[i, :] = accReSpace[i, :] * dt
-                # pos[i, :] = vel[i, :] * dt
-            else:
-                vel[i, :] = vel[i - 1, :] + accReSpace[i, :] * dt
-                # pos[i, :] = pos[i - 1, :] + vel[i, :] * dt
-            # print(vel[i, 0])
-
-    # average of sample period
-    mean_time_diff = np.mean(time_diff_arr)
-
-    # highpass the velocity
-    # filtCutoff = 0.05
-    # sp = mean_time_diff
-    # vel = hp_filter(vel, cutOff=(2*filtCutoff)/(1/sp), fs=sp)
-
-    for i in range(len(accReSpace)):
-        if (i < len(accReSpace) - 1):
-            dt = (time_array[i + 1] - time_array[i]) * 10 ** (-9)
-        for ii in range(accReSpace.shape[1]):
-            if (i == 0):
-                # vel[i, :] = accReSpace[i, :] * dt
                 pos[i, :] = vel[i, :] * dt
             else:
-                # vel[i, :] = vel[i - 1, :] + accReSpace[i, :] * dt
+                vel[i, :] = vel[i - 1, :] + accReSpace[i, :] * dt
                 pos[i, :] = pos[i - 1, :] + vel[i, :] * dt
-            # print(vel[i, 0])
-
-    # pos = hp_filter(pos, cutOff=(2*filtCutoff)/(1/sp), fs=sp)
 
     return (q, pos, vel)
 
