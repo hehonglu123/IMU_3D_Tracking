@@ -14,6 +14,7 @@ This is a PyCharm project but feel free to install all dependencies and just run
 
 Please install matplotlib, numpy, scipy, pandas.
 Madgwick is provided in the project.
+Some functions were rewritten from the scikit-kinematics library as required due to the fact data and sampling rates need to be dynamic.
 
 #Folder Structure
 * Root: Contains everything including all the Python scripts

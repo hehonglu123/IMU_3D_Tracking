@@ -2,114 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f8d5c656-0ccd-4f85-8733-f5bf0c8e101b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/3dokay" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/3dokay.py" beforeDir="false" afterPath="$PROJECT_DIR$/imu3d.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/B.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/Self/B.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/D.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/Self/D.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/L.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/Self/L.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/@MahonyAHRS/MahonyAHRS.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/LoggedData/LoggedData_CalBattAndTherm.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/LoggedData/LoggedData_CalInertialAndMag.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/LoggedData/LoggedData_DateTime.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/LoggedData/LoggedData_EulerAngles.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/LoggedData/LoggedData_Quaternion.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/LoggedData/LoggedData_RotationMatrix.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/Script.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/SixDOFanimation.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/Video Screenshot.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/TestScript.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/axisAngle2quatern.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/axisAngle2rotMat.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/euler2rotMat.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/quatern2euler.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/quatern2rotMat.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/quaternConj.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/quaternProd.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/rotMat2euler.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/rotMat2quatern.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/self.asv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/self.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/ADXL345busDataBaseClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/AnalogueInputDataBaseClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/BatteryAndThermometerDataBaseClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/CalADXL345busDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/CalAnalogueInputDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/CalBatteryAndThermometerDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/CalInertialAndMagneticDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/CommandDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/DataBaseClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/DateTimeDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/DigitalIOdataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/ErrorDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/EulerAnglesDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/ImportDirectory.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/InertialAndMagneticDataBaseClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/PWMoutputDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/QuaternionDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/RawADXL345busDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/RawAnalogueInputDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/RawBatteryAndThermometerDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/RawInertialAndMagneticDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/RegisterDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/RotationMatrixDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/SyncroniseData.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/TimeSeriesDataBaseClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MATLAB/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/xIMUdataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/@MahonyAHRS/MahonyAHRS.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/LoggedData/LoggedData_CalBattAndTherm.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/LoggedData/LoggedData_CalInertialAndMag.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/LoggedData/LoggedData_DateTime.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/LoggedData/LoggedData_EulerAngles.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/LoggedData/LoggedData_Quaternion.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/LoggedData/LoggedData_RotationMatrix.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/Script.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/SixDOFanimation.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/Video Screenshot.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/TestScript.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/axisAngle2quatern.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/axisAngle2rotMat.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/euler2rotMat.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/quatern2euler.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/quatern2rotMat.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/quaternConj.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/quaternProd.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/rotMat2euler.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/quaternion_library/rotMat2quatern.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/ADXL345busDataBaseClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/AnalogueInputDataBaseClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/BatteryAndThermometerDataBaseClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/CalADXL345busDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/CalAnalogueInputDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/CalBatteryAndThermometerDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/CalInertialAndMagneticDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/CommandDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/DataBaseClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/DateTimeDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/DigitalIOdataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/ErrorDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/EulerAnglesDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/ImportDirectory.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/InertialAndMagneticDataBaseClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/PWMoutputDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/QuaternionDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/RawADXL345busDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/RawAnalogueInputDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/RawBatteryAndThermometerDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/RawInertialAndMagneticDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/RegisterDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/RotationMatrixDataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/SyncroniseData.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/TimeSeriesDataBaseClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscillatory-Motion-Tracking-With-x-IMU-master/Oscillatory-Motion-Tracking-With-x-IMU-master/ximu_matlab_library/xIMUdataClass.m" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data_xsens.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/imu3d_ece498.pptx" beforeDir="false" afterPath="$PROJECT_DIR$/imu3d_ece498.pptx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mostupdate.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -144,8 +37,8 @@
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="695">
-                <caret line="35" column="42" lean-forward="true" selection-start-line="35" selection-start-column="42" selection-end-line="35" selection-end-column="42" />
+              <first_editor relative-caret-position="480">
+                <caret line="16" column="136" selection-start-line="16" selection-start-column="136" selection-end-line="16" selection-end-column="136" />
               </first_editor>
               <second_editor />
             </state>
@@ -571,8 +464,8 @@
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="695">
-            <caret line="35" column="42" lean-forward="true" selection-start-line="35" selection-start-column="42" selection-end-line="35" selection-end-column="42" />
+          <first_editor relative-caret-position="480">
+            <caret line="16" column="136" selection-start-line="16" selection-start-column="136" selection-end-line="16" selection-end-column="136" />
           </first_editor>
           <second_editor />
         </state>
